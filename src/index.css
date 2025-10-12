@@ -1,0 +1,224 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* AI Companion Platform Design System - Romantic & Modern */
+
+@layer base {
+  :root {
+    /* Romantic Color Palette */
+    --background: 340 100% 98.5%;  /* #FFF6F9 - Soft pink white */
+    --foreground: 240 15% 15%;     /* Dark text */
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 15% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 15% 15%;
+
+    /* Primary - Romantic Pink */
+    --primary: 340 95% 65%;        /* #FF4D8B */
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - Soft Violet */
+    --secondary: 258 85% 58%;      /* #7C3AED */
+    --secondary-foreground: 0 0% 100%;
+
+    /* Accent - Warm Pink */
+    --accent: 330 85% 70%;         /* #FF7AB6 */
+    --accent-foreground: 0 0% 100%;
+
+    --muted: 340 60% 96%;
+    --muted-foreground: 240 10% 50%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 340 40% 90%;
+    --input: 340 40% 94%;
+    --ring: 340 95% 65%;
+
+    --radius: 1rem;
+
+    /* Romantic Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(340 95% 65%), hsl(258 85% 58%));
+    --gradient-warm: linear-gradient(135deg, hsl(330 85% 70%), hsl(280 75% 68%));
+    --gradient-hero: linear-gradient(135deg, hsl(340 95% 65%) 0%, hsl(280 75% 68%) 50%, hsl(258 85% 58%) 100%);
+    
+    /* Romantic Shadows */
+    --shadow-romantic: 0 10px 25px -5px hsl(340 95% 65% / 0.2);
+    --shadow-heart: 0 8px 20px hsl(340 95% 65% / 0.3);
+    --shadow-glow: 0 0 30px hsl(340 95% 65% / 0.4);
+
+    /* Animations */
+    --transition-romantic: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --bounce-heart: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Dark Romantic Theme */
+    --background: 240 15% 6%;      /* #0F1022 - Deep romantic dark */
+    --foreground: 340 40% 95%;     /* Light pink text */
+
+    --card: 240 15% 8%;
+    --card-foreground: 340 40% 95%;
+
+    --popover: 240 15% 8%;
+    --popover-foreground: 340 40% 95%;
+
+    /* Keep romantic colors in dark mode */
+    --primary: 340 95% 65%;        /* #FF4D8B */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 258 85% 58%;      /* #7C3AED */
+    --secondary-foreground: 0 0% 100%;
+
+    --accent: 330 85% 70%;         /* #FF7AB6 */
+    --accent-foreground: 0 0% 100%;
+
+    --muted: 240 15% 12%;
+    --muted-foreground: 340 20% 70%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 15% 15%;
+    --input: 240 15% 12%;
+    --ring: 340 95% 65%;
+
+    /* Dark gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(340 95% 65%), hsl(258 85% 58%));
+    --gradient-warm: linear-gradient(135deg, hsl(330 85% 70%), hsl(280 75% 68%));
+    --gradient-hero: linear-gradient(135deg, hsl(340 95% 65%) 0%, hsl(280 75% 68%) 50%, hsl(258 85% 58%) 100%);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-poppins;
+  }
+}
+
+@layer components {
+  /* Romantic Button Variants */
+  .btn-romantic {
+    @apply bg-gradient-to-r from-primary to-secondary text-primary-foreground rounded-2xl px-6 py-3 font-medium shadow-lg shadow-primary/25 transition-all duration-300 hover:shadow-xl hover:shadow-primary/40 hover:scale-105;
+  }
+  
+  .btn-hero {
+    @apply bg-gradient-to-r from-primary via-accent to-secondary text-white rounded-full px-8 py-4 text-lg font-semibold shadow-2xl shadow-primary/30 transition-all duration-500 hover:shadow-glow hover:scale-110 transform;
+  }
+
+  /* Heart Animation */
+  .floating-hearts::before {
+    content: '💖';
+    position: absolute;
+    animation: float-heart 3s ease-in-out infinite;
+    opacity: 0.7;
+  }
+  
+  .floating-hearts::after {
+    content: '💕';
+    position: absolute;
+    animation: float-heart 4s ease-in-out infinite reverse;
+    opacity: 0.5;
+    animation-delay: 1.5s;
+  }
+
+  /* Romantic Cards */
+  .card-romantic {
+    @apply bg-card/80 backdrop-blur-sm border border-border/50 rounded-3xl p-6 shadow-lg shadow-primary/10 transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105;
+  }
+}
+
+@layer utilities {
+  /* Gradient Text */
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
+  }
+  
+  /* Romantic Glow */
+  .glow-romantic {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+  }
+  
+  .shadow-glow {
+    box-shadow: 0 0 30px hsl(var(--primary) / 0.4);
+  }
+  
+  /* Scrollbar hide utility */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Heart Pulse */
+  .pulse-heart {
+    animation: pulse-heart 2s ease-in-out infinite;
+  }
+}
+
+/* Keyframe Animations */
+@keyframes float-heart {
+  0%, 100% { 
+    transform: translateY(0px) rotate(0deg); 
+    opacity: 0.7; 
+  }
+  50% { 
+    transform: translateY(-10px) rotate(5deg); 
+    opacity: 1; 
+  }
+}
+
+@keyframes pulse-heart {
+  0%, 100% { 
+    transform: scale(1); 
+  }
+  50% { 
+    transform: scale(1.1); 
+  }
+}
+
+@keyframes typing-dots {
+  0%, 20% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.typing-animation span {
+  animation: typing-dots 1.4s infinite;
+}
+
+.typing-animation span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-animation span:nth-child(3) {
+  animation-delay: 0.4s;
+}
