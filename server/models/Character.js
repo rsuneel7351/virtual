@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const CharacterSchema = new mongoose.Schema({
-   _id: String,
+  _id: String,
   name: { type: String, required: true },
   avatar: { type: String, required: true }, // image URL
   age: { type: Number, required: true },
@@ -13,7 +13,8 @@ const CharacterSchema = new mongoose.Schema({
   isAdult: { type: Boolean, default: false }, // true if contains bold/adult content
   isLocked: { type: Boolean, default: false }, // true if requires coins to unlock
   price: { type: Number, default: 0 }, // coins required to unlock
-  rating: { type: Number, default: 0 } // 0-5 rating
+  rating: { type: Number, default: 0 }, // 0-5 rating
+  prompt: { type: String }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Character', CharacterSchema);

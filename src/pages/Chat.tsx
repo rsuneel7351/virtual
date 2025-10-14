@@ -6,7 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import character1 from "@/assets/character-1.jpg";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 interface Message {
   id: string;
@@ -24,10 +24,11 @@ const Chat = () => {
       timestamp: new Date()
     }
   ]);
+  const navigate = useNavigate()
   const [inputText, setInputText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [coins, setCoins] = useState(80);
-  const [timeRemaining, setTimeRemaining] = useState(240); // 4 minutes in seconds
+  const [timeRemaining, setTimeRemaining] = useState(240); 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const { characterId } = useParams<{ characterId: string }>();
@@ -113,7 +114,7 @@ const Chat = () => {
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border/50 bg-card/50 backdrop-blur-sm">
         <div className="flex items-center space-x-3">
-          <Button variant="ghost" size="sm" className="p-2">
+          <Button variant="ghost" size="sm" className="p-2" onClick={() => navigate(-1)}>
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <Avatar className="w-10 h-10 ring-2 ring-primary/20">
