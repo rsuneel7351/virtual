@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ChevronLeft, ChevronRight, Heart, Shield, AlertTriangle, Sparkles } from "lucide-react";
+import { BASE_URL } from "@/utils/constant";
 
 interface OnboardingState {
   orientation: string;
@@ -20,7 +21,7 @@ const Onboarding = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [showAdultModal, setShowAdultModal] = useState(false);
   const [tempAdultMode, setTempAdultMode] = useState(false);
-  
+
   const [preferences, setPreferences] = useState<OnboardingState>({
     orientation: "",
     companionGender: "",
@@ -53,14 +54,34 @@ const Onboarding = () => {
     { id: "bold", label: "Bold", icon: "🔥", description: "Confident and direct" }
   ];
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
     } else {
-      // Complete onboarding
-      navigate("/characters", { state: { preferences } });
+      try {
+        const token = localStorage.getItem("token");
+
+        const res = await fetch(`${BASE_URL}/preferences`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(preferences),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Failed to save preferences");
+
+        console.log("Preferences saved:", data);
+        navigate("/characters", { state: { preferences: data.preferences } });
+      } catch (err) {
+        console.error(err);
+        alert("Error saving preferences. Please try again.");
+      }
     }
   };
+
 
   const handleBack = () => {
     if (currentStep > 1) {
@@ -159,7 +180,7 @@ const Onboarding = () => {
               {currentStep === 2 && <Sparkles className="w-6 h-6" />}
               {currentStep === 3 && <span className="text-2xl">🎭</span>}
               {currentStep === 4 && <Shield className="w-6 h-6" />}
-              
+
               {currentStep === 1 && "What kind of connection are you looking for?"}
               {currentStep === 2 && "Preferred AI Companion Gender?"}
               {currentStep === 3 && "Choose Your Conversation Style"}
@@ -174,11 +195,10 @@ const Onboarding = () => {
                 {orientationOptions.map((option) => (
                   <Card
                     key={option.id}
-                    className={`cursor-pointer transition-all duration-300 hover:shadow-lg ${
-                      preferences.orientation === option.id
+                    className={`cursor-pointer transition-all duration-300 hover:shadow-lg ${preferences.orientation === option.id
                         ? 'bg-gradient-to-r from-primary/20 to-secondary/20 border-primary shadow-glow'
                         : 'hover:bg-accent/5'
-                    }`}
+                      }`}
                     onClick={() => handleOrientationSelect(option.id)}
                   >
                     <CardContent className="p-4 flex items-center gap-4">
@@ -202,11 +222,10 @@ const Onboarding = () => {
                 {genderOptions.map((option) => (
                   <Card
                     key={option.id}
-                    className={`cursor-pointer transition-all duration-300 hover:shadow-lg aspect-square ${
-                      preferences.companionGender === option.id
+                    className={`cursor-pointer transition-all duration-300 hover:shadow-lg aspect-square ${preferences.companionGender === option.id
                         ? 'bg-gradient-to-br from-primary/20 to-secondary/20 border-primary shadow-glow'
                         : 'hover:bg-accent/5'
-                    }`}
+                      }`}
                     onClick={() => handleGenderSelect(option.id)}
                   >
                     <CardContent className="p-6 h-full flex flex-col items-center justify-center text-center space-y-3">
@@ -232,11 +251,10 @@ const Onboarding = () => {
                   {toneOptions.map((option) => (
                     <Card
                       key={option.id}
-                      className={`cursor-pointer transition-all duration-300 hover:shadow-lg ${
-                        preferences.tonePreference.includes(option.id)
+                      className={`cursor-pointer transition-all duration-300 hover:shadow-lg ${preferences.tonePreference.includes(option.id)
                           ? 'bg-gradient-to-br from-primary/20 to-secondary/20 border-primary shadow-glow'
                           : 'hover:bg-accent/5'
-                      }`}
+                        }`}
                       onClick={() => handleToneToggle(option.id)}
                     >
                       <CardContent className="p-4 flex items-center gap-4">

@@ -213,7 +213,7 @@ const Auth = () => {
               className="p-0 h-auto text-primary font-medium"
               onClick={() => setIsLogin(!isLogin)}
             >
-              {loading ? (isLogin ? "Signing In..." : "Creating Account...") : (isLogin ? "Sign In" : "Create Account")}
+              {loading ? (isLogin ? "Signing In..." : "Creating Account...") : (!isLogin ? "Sign In" : "Create Account")}
             </Button>
           </div>
         </CardContent>

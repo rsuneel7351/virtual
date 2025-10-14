@@ -6,6 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import character1 from "@/assets/character-1.jpg";
+import { useLocation, useParams } from "react-router-dom";
 
 interface Message {
   id: string;
@@ -28,13 +29,9 @@ const Chat = () => {
   const [coins, setCoins] = useState(80);
   const [timeRemaining, setTimeRemaining] = useState(240); // 4 minutes in seconds
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const character = {
-    name: "Sophia",
-    avatar: character1,
-    status: "online"
-  };
-
+  const location = useLocation();
+  const { characterId } = useParams<{ characterId: string }>();
+  const character = location.state?.character;
   // Scroll to bottom when new message arrives
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -91,7 +88,7 @@ const Chat = () => {
       ];
 
       const randomResponse = aiResponses[Math.floor(Math.random() * aiResponses.length)];
-      
+
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: randomResponse,
@@ -131,7 +128,7 @@ const Chat = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-4">
           {/* Coin Timer */}
           <div className="flex items-center space-x-2 bg-muted/50 rounded-full px-3 py-1">
@@ -140,7 +137,7 @@ const Chat = () => {
             <span className="text-xs text-muted-foreground">|</span>
             <span className="text-xs font-mono">{formatTime(timeRemaining)}</span>
           </div>
-          
+
           <Button variant="ghost" size="sm" className="p-2">
             <Settings className="w-4 h-4" />
           </Button>
@@ -155,19 +152,17 @@ const Chat = () => {
             className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
-                message.sender === "user"
-                  ? "bg-gradient-to-r from-primary to-accent text-white ml-12"
-                  : "bg-muted/80 text-foreground mr-12 relative"
-              }`}
+              className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${message.sender === "user"
+                ? "bg-gradient-to-r from-primary to-accent text-white ml-12"
+                : "bg-muted/80 text-foreground mr-12 relative"
+                }`}
             >
               {message.sender === "ai" && (
                 <div className="absolute -top-1 -right-1 text-xs opacity-30">💖</div>
               )}
               <p className="text-sm leading-relaxed">{message.text}</p>
-              <p className={`text-xs mt-1 ${
-                message.sender === "user" ? "text-white/70" : "text-muted-foreground"
-              }`}>
+              <p className={`text-xs mt-1 ${message.sender === "user" ? "text-white/70" : "text-muted-foreground"
+                }`}>
                 {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>
             </div>
@@ -232,7 +227,7 @@ const Chat = () => {
               <Send className="w-4 h-4 text-primary" />
             </Button>
           </div>
-          
+
           <Button
             variant="outline"
             size="sm"
@@ -267,13 +262,13 @@ const Chat = () => {
                 Chat costs 20 coins per minute. Choose how to get more:
               </p>
             </div>
-            
+
             <div className="space-y-3">
               <Button variant="outline" className="w-full justify-between rounded-xl">
                 <span>Watch Ad</span>
                 <Badge variant="secondary">+20 coins</Badge>
               </Button>
-              
+
               <div className="grid gap-3">
                 <Button variant="outline" className="justify-between rounded-xl">
                   <span>100 Coins</span>
