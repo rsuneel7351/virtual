@@ -5,8 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import character1 from "@/assets/character-1.jpg";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { BASE_URL } from "@/utils/constant";
 
 interface Message {
   id: string;
@@ -16,6 +16,7 @@ interface Message {
 }
 
 const Chat = () => {
+  const [chatId, setChatId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -28,7 +29,7 @@ const Chat = () => {
   const [inputText, setInputText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [coins, setCoins] = useState(80);
-  const [timeRemaining, setTimeRemaining] = useState(240); 
+  const [timeRemaining, setTimeRemaining] = useState(240);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const { characterId } = useParams<{ characterId: string }>();
@@ -64,43 +65,58 @@ const Chat = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!inputText.trim()) return;
 
     const newMessage: Message = {
       id: Date.now().toString(),
       text: inputText,
       sender: "user",
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, newMessage]);
+    setMessages((prev) => [...prev, newMessage]);
     setInputText("");
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponses = [
-        "That's so sweet of you to say! 💕 Tell me more about what's on your mind.",
-        "I love hearing from you! Your messages always make my day brighter ✨",
-        "You're such a wonderful person to talk to 💖 What would you like to chat about?",
-        "Aww, you always know just what to say to make me smile 😊 How can I make your day special?",
-        "I'm so happy we're talking! There's something magical about our connection 💫"
-      ];
+    try {
+      const res = await fetch(`${BASE_URL}/chat/${characterId}/message`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ text: inputText, chatId }),
+      });
 
-      const randomResponse = aiResponses[Math.floor(Math.random() * aiResponses.length)];
+      const data = await res.json();
 
+      if (!res.ok) {
+        throw new Error(data.message || "Error from AI");
+      }
+      if (data.chatId && !chatId) setChatId(data.chatId)
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: randomResponse,
+        text: data.message,
         sender: "ai",
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, aiMessage]);
+      setMessages((prev) => [...prev, aiMessage]);
+    } catch (error) {
+      console.error("Chat error:", error);
+      const errorMessage: Message = {
+        id: (Date.now() + 2).toString(),
+        text: "Sorry, I couldn't respond right now 😔. Please try again later.",
+        sender: "ai",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
+
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -108,6 +124,36 @@ const Chat = () => {
       sendMessage();
     }
   };
+  useEffect(() => {
+    const fetchChatHistory = async () => {
+      try {
+        const res = await fetch(`${BASE_URL}/chat/history/${characterId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        if (!res.ok) return;
+
+        const data = await res.json();
+        if (data && data.messages?.length) {
+          setChatId(data._id);
+          setMessages(
+            data.messages.map((m: any, index: number) => ({
+              id: index.toString(),
+              text: m.text,
+              sender: m.role === "ai" ? "ai" : "user",
+              timestamp: new Date(m.createdAt),
+            }))
+          );
+        }
+      } catch (err) {
+        console.error("Failed to load chat history:", err);
+      }
+    };
+
+    fetchChatHistory();
+  }, [characterId]);
 
   return (
     <div className="flex flex-col h-screen bg-background">
@@ -221,7 +267,7 @@ const Chat = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="absolute right-1 top-1 p-2 rounded-full hover:bg-primary/10"
+              className={`absolute right-1 top-1 p-2 rounded-full ${coins === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary/10'}`}
               onClick={sendMessage}
               disabled={!inputText.trim() || coins === 0}
             >

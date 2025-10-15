@@ -25,7 +25,7 @@ interface Character {
 }
 
 const CharacterSelect = () => {
-  const navigate=useNavigate()
+  const navigate = useNavigate()
   const [characters, setCharacters] = useState<Character[]>([]);
   const [coins, setCoins] = useState(0);
 
@@ -59,37 +59,40 @@ const CharacterSelect = () => {
   const handleCharacterSelect = async (character: Character) => {
     if (!character.unlocked) {
       if (character.price === 0) {
-        console.log(character.id)
-        // Free character: show rewarded ad
-        // console.log("Show rewarded ad for free character...");
-        // alert(`Watch a short ad to unlock ${character.name}`); // replace with actual ad SDK
-        // after ad finishes:
-        // await axios.post(`${BASE_URL}/characters/unlock/${character.id}`, {}, {
-        //   headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        // });
-        // alert(`${character.name} unlocked! Redirecting to chat...`);
-        // fetchCharacters();
-        // redirect to chat page
+        // Free / Ad unlock
         navigate(`/chat/${character.id}`, { state: { character } });
         console.log(`Redirect to chat with ${character.name}`);
       } else {
-        // Paid character: deduct coins
         try {
-          const res = await axios.post(`${BASE_URL}/characters/unlock/${character.id}`, {}, {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-          });
+          const res = await axios.post(
+            `${BASE_URL}/characters/unlock/${character.id}`,
+            {},
+            {
+              headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            }
+          );
+
           alert(`Unlocked ${character.name} successfully!`);
+
+          // ✅ Update balance
           setCoins(res.data.coins);
-          fetchCharacters();
+
+          // ✅ Mark this character as unlocked in local state (no need to re-fetch all)
+          setCharacters((prev) =>
+            prev.map((c) =>
+              c.id === character.id ? { ...c, unlocked: true } : c
+            )
+          );
         } catch (err: any) {
           alert(err.response?.data?.message || "Failed to unlock character");
         }
       }
     } else {
       // Already unlocked: go to chat
-      console.log(`Starting chat with ${character.name}`);
+      navigate(`/chat/${character.id}`, { state: { character } });
     }
   };
+
 
 
   return (

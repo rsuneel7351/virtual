@@ -9,6 +9,7 @@ import CharacterSelect from "./pages/CharacterSelect";
 import Chat from "./pages/Chat";
 import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -21,10 +22,30 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/characters" element={<CharacterSelect />} />
-          <Route path="/chat/:characterId" element={<Chat />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route
+            path="/onboarding"
+            element={
+              <ProtectedRoute>
+                <Onboarding />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/characters"
+            element={
+              <ProtectedRoute>
+                <CharacterSelect />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/chat/:characterId"
+            element={
+              <ProtectedRoute>
+                <Chat />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
