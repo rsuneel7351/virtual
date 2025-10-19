@@ -185,7 +185,7 @@ const Chat = () => {
             <span className="text-xs font-mono">{formatTime(timeRemaining)}</span>
           </div>
 
-          <Button variant="ghost" size="sm" className="p-2">
+          <Button onClick={()=>navigate("/setting")} variant="ghost" size="sm" className="p-2">
             <Settings className="w-4 h-4" />
           </Button>
         </div>

@@ -60,9 +60,7 @@ const App = () => (
             path="/chat/:characterId"
             element={
               <ProtectedRoute>
-                <Layout>
                   <Chat />
-                </Layout>
               </ProtectedRoute>
             }
           />
