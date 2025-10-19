@@ -10,6 +10,9 @@ import Chat from "./pages/Chat";
 import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./ProtectedRoute";
+import ForgotPassword from "./pages/ForgotPassword";
+import Settings from "./pages/Setting";
+import Layout from "./Layout";
 
 const queryClient = new QueryClient();
 
@@ -22,11 +25,24 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/forget-password" element={<ForgotPassword />} />
           <Route
             path="/onboarding"
             element={
               <ProtectedRoute>
-                <Onboarding />
+                <Layout>
+                  <Onboarding />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/setting"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Settings />
+                </Layout >
               </ProtectedRoute>
             }
           />
@@ -34,7 +50,9 @@ const App = () => (
             path="/characters"
             element={
               <ProtectedRoute>
-                <CharacterSelect />
+                <Layout>
+                  <CharacterSelect />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -42,7 +60,9 @@ const App = () => (
             path="/chat/:characterId"
             element={
               <ProtectedRoute>
-                <Chat />
+                <Layout>
+                  <Chat />
+                </Layout>
               </ProtectedRoute>
             }
           />

@@ -45,6 +45,8 @@ const UserSchema = new mongoose.Schema({
   gender: { type: String, default: "male" },
   hasCompletedOnboarding: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
+  otp: { type: String, default: null },
+  otpExpires: { type: Date, default: null }
 });
 
 module.exports = mongoose.model("User", UserSchema);

@@ -9,13 +9,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import logo from "@/assets/logo.png";
 import api from "@/utils/api";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const navigate=useNavigate()
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -44,7 +45,7 @@ const Auth = () => {
         if (!response?.data?.user?.hasCompletedOnboarding) {
           navigate("/onboarding");
         } else {
-          navigate("/chat"); 
+          navigate("/characters");
         }
       } else {
         // REGISTER API
@@ -64,8 +65,7 @@ const Auth = () => {
           password: formData.password,
           gender: formData.gender
         });
-        console.log("Registration Success:", response.data);
-        alert("Registration successful! Please log in.");
+        toast.success("Registration successful! Please log in.");
         setIsLogin(true);
       }
     } catch (error: any) {
@@ -151,7 +151,17 @@ const Auth = () => {
                 {showPassword ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
               </Button>
             </div>
-
+            {isLogin && (
+              <div className="text-right -mt-3 mb-1">
+                <button
+                  type="button"
+                  onClick={() => navigate("/forget-password")}
+                  className="text-xs text-primary hover:underline"
+                >
+                  Forgot Password?
+                </button>
+              </div>
+            )}
             {!isLogin && (
               <>
                 <div className="relative">
