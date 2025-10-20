@@ -30,10 +30,12 @@ const Chat = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [coins, setCoins] = useState(80);
   const [timeRemaining, setTimeRemaining] = useState(240);
+  const [hasError, setHasError] = useState(false); // ⚠️ Added
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const { characterId } = useParams<{ characterId: string }>();
   const character = location.state?.character;
+
   // Scroll to bottom when new message arrives
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -66,7 +68,7 @@ const Chat = () => {
   };
 
   const sendMessage = async () => {
-    if (!inputText.trim()) return;
+    if (!inputText.trim() || hasError) return;
 
     const newMessage: Message = {
       id: Date.now().toString(),
@@ -105,9 +107,10 @@ const Chat = () => {
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
       console.error("Chat error:", error);
+      setHasError(true); // ⚠️ Lock chat
       const errorMessage: Message = {
         id: (Date.now() + 2).toString(),
-        text: "Sorry, I couldn't respond right now 😔. Please try again later.",
+        text: "⚠️ Oops! Something went wrong. The AI seems to be offline right now.",
         sender: "ai",
         timestamp: new Date(),
       };
@@ -192,7 +195,7 @@ const Chat = () => {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className={`flex-1 overflow-y-auto p-4 space-y-4 ${hasError ? 'opacity-60 pointer-events-none' : ''}`}>
         {messages.map((message) => (
           <div
             key={message.id}
@@ -254,38 +257,53 @@ const Chat = () => {
 
       {/* Input Area */}
       <div className="p-4 border-t border-border/50 bg-card/50 backdrop-blur-sm">
-        <div className="flex items-center space-x-3">
-          <div className="flex-1 relative">
-            <Input
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Type a message..."
-              className="pr-12 rounded-full border-border/50 focus:border-primary bg-background/80"
-              disabled={coins === 0}
-            />
+        {hasError ? (
+          <div className="text-center space-y-3 py-4">
+            <p className="text-sm text-muted-foreground">
+              💔 Chat temporarily locked due to a system error.
+            </p>
             <Button
-              variant="ghost"
-              size="sm"
-              className={`absolute right-1 top-1 p-2 rounded-full ${coins === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary/10'}`}
-              onClick={sendMessage}
-              disabled={!inputText.trim() || coins === 0}
+              variant="outline"
+              onClick={() => window.location.reload()}
+              className="text-sm"
             >
-              <Send className="w-4 h-4 text-primary" />
+              Retry Chat
             </Button>
           </div>
+        ) : (
+          <div className="flex items-center space-x-3">
+            <div className="flex-1 relative">
+              <Input
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Type a message..."
+                className="pr-12 rounded-full border-border/50 focus:border-primary bg-background/80"
+                disabled={coins === 0 || hasError}
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`absolute right-1 top-1 p-2 rounded-full ${coins === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary/10'}`}
+                onClick={sendMessage}
+                disabled={!inputText.trim() || coins === 0 || hasError}
+              >
+                <Send className="w-4 h-4 text-primary" />
+              </Button>
+            </div>
 
-          <Button
-            variant="outline"
-            size="sm"
-            className="rounded-full p-3 border-primary/30 hover:bg-primary/10"
-            disabled={coins === 0}
-          >
-            <Mic className="w-4 h-4 text-primary" />
-          </Button>
-        </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-full p-3 border-primary/30 hover:bg-primary/10"
+              disabled={coins === 0 || hasError}
+            >
+              <Mic className="w-4 h-4 text-primary" />
+            </Button>
+          </div>
+        )}
 
-        {coins === 0 && (
+        {coins === 0 && !hasError && (
           <p className="text-xs text-center text-muted-foreground mt-2">
             Out of coins! Watch an ad or buy more to continue chatting.
           </p>
