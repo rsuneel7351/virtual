@@ -3,8 +3,13 @@ const auth = require('../middleware/auth');
 const Chat = require('../models/Chat');
 const Character = require('../models/Character');
 const Groq = require("groq-sdk");
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const GROQ_API_KEYS = [
+  process.env.GROQ_API_KEY1,
+  process.env.GROQ_API_KEY2,
+];
+const randomKey = GROQ_API_KEYS[Math.floor(Math.random() * GROQ_API_KEYS.length)];
 
+const groq = new Groq({ apiKey: randomKey });
 const router = express.Router();
 
 // 🧠 Build AI system prompt dynamically

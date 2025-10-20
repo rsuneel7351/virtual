@@ -32,7 +32,27 @@ router.get('/', auth, async (req, res) => {
 });
 
 
+router.get('/show', async (req, res) => {
+  try {
+    const chars = await Character.find({});
+    const data = chars?.map(c => ({
+      id: c._id,
+      name: c.name,
+      avatar: c.avatar,
+      age: c.age,
+      gender: c.gender,
+      orientation: c.orientation,
+      personality: c.personality,
+      sampleLine: c.sampleLine,
+      isAdult: c.isAdult,
+    }));
 
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'server error' });
+  }
+});
 
 // ===== Unlock character (deduct coins) =====
 router.post('/unlock/:id', auth, async (req, res) => {
